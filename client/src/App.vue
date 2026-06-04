@@ -1,48 +1,93 @@
 <template>
   <div class="app">
-    <header class="top-nav">
-      <div class="nav-container">
-        <div class="logo">
-          <h1>{{ t('nav.companyName') }}</h1>
-          <span class="subtitle">{{ t('nav.subtitle') }}</span>
+    <aside class="sidebar" :class="{ collapsed: sidebarCollapsed }">
+      <div class="sidebar-brand">
+        <div class="brand-text">
+          <h1 class="brand-name">{{ t('nav.companyName') }}</h1>
+          <span class="brand-subtitle">{{ t('nav.subtitle') }}</span>
         </div>
-        <nav class="nav-tabs">
-          <router-link to="/" :class="{ active: $route.path === '/' }">
-            {{ t('nav.overview') }}
-          </router-link>
-          <router-link to="/inventory" :class="{ active: $route.path === '/inventory' }">
-            {{ t('nav.inventory') }}
-          </router-link>
-          <router-link to="/orders" :class="{ active: $route.path === '/orders' }">
-            {{ t('nav.orders') }}
-          </router-link>
-          <router-link to="/spending" :class="{ active: $route.path === '/spending' }">
-            {{ t('nav.finance') }}
-          </router-link>
-          <router-link to="/demand" :class="{ active: $route.path === '/demand' }">
-            {{ t('nav.demandForecast') }}
-          </router-link>
-          <router-link to="/reports" :class="{ active: $route.path === '/reports' }">
-            Reports
-          </router-link>
-        </nav>
+        <button class="sidebar-toggle" @click="toggleSidebar" :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path v-if="!sidebarCollapsed" d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path v-else d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <router-link to="/" class="nav-item" :class="{ active: $route.path === '/' }" :title="sidebarCollapsed ? t('nav.overview') : ''">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="2" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="10" y="2" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="2" y="10" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="10" y="10" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <span>{{ t('nav.overview') }}</span>
+        </router-link>
+
+        <router-link to="/inventory" class="nav-item" :class="{ active: $route.path === '/inventory' }" :title="sidebarCollapsed ? t('nav.inventory') : ''">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M2 5L9 2L16 5V13L9 16L2 13V5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M9 2V16" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M2 5L9 8L16 5" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <span>{{ t('nav.inventory') }}</span>
+        </router-link>
+
+        <router-link to="/orders" class="nav-item" :class="{ active: $route.path === '/orders' }" :title="sidebarCollapsed ? t('nav.orders') : ''">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <rect x="3" y="2" width="12" height="14" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M6 6H12M6 9H12M6 12H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>{{ t('nav.orders') }}</span>
+        </router-link>
+
+        <router-link to="/spending" class="nav-item" :class="{ active: $route.path === '/spending' }" :title="sidebarCollapsed ? t('nav.finance') : ''">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M3 13L7 9L10 11L15 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="15" cy="5" r="1.5" fill="currentColor"/>
+          </svg>
+          <span>{{ t('nav.finance') }}</span>
+        </router-link>
+
+        <router-link to="/demand" class="nav-item" :class="{ active: $route.path === '/demand' }" :title="sidebarCollapsed ? t('nav.demandForecast') : ''">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M2 14L6 10L9 12L13 7L16 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 5H16V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>{{ t('nav.demandForecast') }}</span>
+        </router-link>
+
+        <router-link to="/reports" class="nav-item" :class="{ active: $route.path === '/reports' }" :title="sidebarCollapsed ? 'Reports' : ''">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="2" width="14" height="14" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M5 7H13M5 10H10M5 13H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Reports</span>
+        </router-link>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-divider"></div>
         <LanguageSwitcher />
         <ProfileMenu
           @show-profile-details="showProfileDetails = true"
           @show-tasks="showTasks = true"
         />
       </div>
-    </header>
-    <FilterBar />
-    <main class="main-content">
-      <router-view />
-    </main>
+    </aside>
+
+    <div class="main-wrapper" :class="{ collapsed: sidebarCollapsed }">
+      <FilterBar />
+      <main class="main-content">
+        <router-view />
+      </main>
+    </div>
 
     <ProfileDetailsModal
       :is-open="showProfileDetails"
       @close="showProfileDetails = false"
     />
-
     <TasksModal
       :is-open="showTasks"
       :tasks="tasks"
@@ -55,7 +100,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { api } from './api'
 import { useAuth } from './composables/useAuth'
 import { useI18n } from './composables/useI18n'
@@ -77,6 +122,31 @@ export default {
   setup() {
     const { currentUser } = useAuth()
     const { t } = useI18n()
+
+    // Sidebar collapse state — persisted to localStorage
+    const sidebarCollapsed = ref(localStorage.getItem('sidebarCollapsed') === 'true')
+
+    const toggleSidebar = () => {
+      sidebarCollapsed.value = !sidebarCollapsed.value
+      localStorage.setItem('sidebarCollapsed', sidebarCollapsed.value)
+    }
+
+    // Auto-collapse on small screens
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        sidebarCollapsed.value = true
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    // Check initial width
+    if (window.innerWidth < 1024) {
+      sidebarCollapsed.value = true
+    }
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleResize)
+    })
+
     const showProfileDetails = ref(false)
     const showTasks = ref(false)
     const apiTasks = ref([])
@@ -150,6 +220,8 @@ export default {
 
     return {
       t,
+      sidebarCollapsed,
+      toggleSidebar,
       showProfileDetails,
       showTasks,
       tasks,
@@ -176,101 +248,257 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* === LAYOUT === */
 .app {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   min-height: 100vh;
 }
 
-.top-nav {
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-  position: sticky;
+/* === SIDEBAR === */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: #1e293b;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
   top: 0;
+  left: 0;
+  height: 100vh;
   z-index: 100;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.2s ease, min-width 0.2s ease;
 }
 
-.nav-container {
-  max-width: 1600px;
-  margin: 0 auto;
+.main-wrapper {
+  transition: margin-left 0.2s ease;
+}
+
+/* === COLLAPSED STATE === */
+.sidebar.collapsed {
+  width: 64px;
+  min-width: 64px;
+}
+
+.main-wrapper.collapsed {
+  margin-left: 64px;
+}
+
+/* Brand area in collapsed state */
+.sidebar-toggle {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
   display: flex;
   align-items: center;
-  padding: 0 2rem;
-  height: 70px;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 0.15s ease, background 0.15s ease;
 }
 
-.nav-container > .nav-tabs {
-  margin-left: auto;
-  margin-right: 1rem;
+.sidebar-toggle:hover {
+  color: #e2e8f0;
+  background: #334155;
 }
 
-.nav-container > .language-switcher {
-  margin-right: 1rem;
+.sidebar.collapsed .sidebar-toggle {
+  margin: 0 auto;
 }
 
-.logo {
+.sidebar.collapsed .brand-text {
+  display: none;
+}
+
+/* Nav items in collapsed state */
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 0;
+  width: 40px;
+  margin: 0 auto;
+  border-left: none;
+  border-radius: 8px;
+}
+
+.sidebar.collapsed .nav-item.active {
+  border-left: none;
+  background: #334155;
+  color: #60a5fa;
+}
+
+.sidebar.collapsed .nav-item span {
+  display: none;
+}
+
+.sidebar.collapsed .nav-item svg {
+  opacity: 1;
+}
+
+/* Sidebar nav padding in collapsed state */
+.sidebar.collapsed .sidebar-nav {
+  padding: 0.75rem 0.75rem 0;
+  align-items: center;
+}
+
+/* Footer in collapsed state — hide text-heavy components, show compact icons */
+.sidebar.collapsed .sidebar-footer {
+  align-items: center;
+}
+
+.sidebar.collapsed .sidebar-footer :deep(.language-button),
+.sidebar.collapsed .sidebar-footer :deep(.profile-button) {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.sidebar.collapsed .sidebar-footer :deep(.language-label),
+.sidebar.collapsed .sidebar-footer :deep(.profile-name),
+.sidebar.collapsed .sidebar-footer :deep(.chevron) {
+  display: none;
+}
+
+/* === SIDEBAR BRAND (base) === */
+.sidebar-brand {
+  height: 64px;
+  min-height: 64px;
+  padding: 0 1.25rem;
   display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #334155;
 }
 
-.logo h1 {
-  font-size: 1.375rem;
-  font-weight: 700;
-  color: #0f172a;
-  letter-spacing: -0.025em;
-}
-
-.subtitle {
-  font-size: 0.813rem;
-  color: #64748b;
-  font-weight: 400;
-  padding-left: 0.75rem;
-  border-left: 1px solid #e2e8f0;
-}
-
-.nav-tabs {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.nav-tabs a {
-  padding: 0.625rem 1.25rem;
-  color: #64748b;
-  text-decoration: none;
-  font-weight: 500;
+.brand-name {
   font-size: 0.938rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.brand-subtitle {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 400;
+  margin-top: 0.125rem;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 0.75rem 0.75rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.75rem;
+  height: 40px;
   border-radius: 6px;
-  transition: all 0.2s ease;
-  position: relative;
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  border-left: 2px solid transparent;
 }
 
-.nav-tabs a:hover {
-  color: #0f172a;
-  background: #f1f5f9;
+.nav-item:hover {
+  color: #e2e8f0;
+  background: #334155;
 }
 
-.nav-tabs a.active {
+.nav-item.active {
   color: #2563eb;
   background: #eff6ff;
+  border-left-color: #2563eb;
+  font-weight: 600;
 }
 
-.nav-tabs a.active::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
+.nav-item svg {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.nav-item.active svg {
+  opacity: 1;
+}
+
+/* === SIDEBAR FOOTER === */
+.sidebar-footer {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar-footer-divider {
+  height: 1px;
+  background: #334155;
+  margin-bottom: 0.25rem;
+}
+
+/* Dark sidebar overrides — pierce into child component styles */
+.sidebar-footer :deep(.language-button),
+.sidebar-footer :deep(.profile-button) {
+  background: transparent;
+  border-color: #334155;
+  color: #94a3b8;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.sidebar-footer :deep(.language-button):hover,
+.sidebar-footer :deep(.profile-button):hover {
+  background: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.sidebar-footer :deep(.profile-name),
+.sidebar-footer :deep(.language-label) {
+  color: #cbd5e1;
+}
+
+.sidebar-footer :deep(.globe-icon),
+.sidebar-footer :deep(.chevron) {
+  color: #64748b;
+}
+
+/* Dropdowns open upward — prevent clipping at bottom of viewport */
+.sidebar-footer :deep(.dropdown-menu) {
+  top: auto;
+  bottom: calc(100% + 0.5rem);
+  right: auto;
   left: 0;
-  right: 0;
-  height: 2px;
-  background: #2563eb;
+  z-index: 200;
+  min-width: 200px;
+}
+
+/* === MAIN AREA === */
+.main-wrapper {
+  margin-left: 240px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-width: 0; /* allows table overflow-x: auto to work inside flex */
 }
 
 .main-content {
   flex: 1;
-  max-width: 1600px;
-  width: 100%;
-  margin: 0 auto;
   padding: 1.5rem 2rem;
 }
 

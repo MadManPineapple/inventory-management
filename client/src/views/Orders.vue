@@ -74,6 +74,51 @@
           </table>
         </div>
       </div>
+
+      <div class="card" style="margin-top: 1.25rem;">
+        <div class="card-header">
+          <h3 class="card-title">Submitted Restocking Orders ({{ restockingOrders.length }})</h3>
+          <span class="badge info">7-day delivery lead time</span>
+        </div>
+        <div v-if="restockingLoading" class="loading">Loading restocking orders...</div>
+        <div v-else-if="restockingOrders.length === 0" class="empty-state">
+          No restocking orders submitted yet. Visit the Restocking tab to place an order.
+        </div>
+        <div v-else class="table-container">
+          <table class="restocking-table">
+            <thead>
+              <tr>
+                <th class="col-order-number">Order Number</th>
+                <th class="col-items">Items</th>
+                <th class="col-status">Status</th>
+                <th class="col-date">Submitted Date</th>
+                <th class="col-date">Expected Delivery</th>
+                <th class="col-value">Total Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="order in restockingOrders" :key="order.id">
+                <td class="col-order-number"><strong>{{ order.order_number }}</strong></td>
+                <td class="col-items">
+                  <details class="items-details">
+                    <summary class="items-summary">{{ order.items.length }} items</summary>
+                    <div class="items-dropdown">
+                      <div v-for="(item, idx) in order.items" :key="idx" class="item-entry">
+                        <span class="item-name">{{ item.name }}</span>
+                        <span class="item-meta">Qty: {{ item.quantity }} @ ${{ item.unit_cost.toFixed(2) }}</span>
+                      </div>
+                    </div>
+                  </details>
+                </td>
+                <td class="col-status"><span class="badge warning">{{ order.status }}</span></td>
+                <td class="col-date">{{ formatDate(order.submitted_date) }}</td>
+                <td class="col-date">{{ formatDate(order.expected_delivery) }}</td>
+                <td class="col-value"><strong>${{ order.total_value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -95,6 +140,8 @@ export default {
     const loading = ref(true)
     const error = ref(null)
     const orders = ref([])
+    const restockingOrders = ref([])
+    const restockingLoading = ref(false)
 
     // Use shared filters
     const {
@@ -121,6 +168,17 @@ export default {
         error.value = 'Failed to load orders: ' + err.message
       } finally {
         loading.value = false
+      }
+    }
+
+    const loadRestockingOrders = async () => {
+      try {
+        restockingLoading.value = true
+        restockingOrders.value = await api.getRestockingOrders()
+      } catch (err) {
+        // non-fatal: section shows empty state
+      } finally {
+        restockingLoading.value = false
       }
     }
 
@@ -153,13 +211,18 @@ export default {
       })
     }
 
-    onMounted(loadOrders)
+    onMounted(() => {
+      loadOrders()
+      loadRestockingOrders()
+    })
 
     return {
       t,
       loading,
       error,
       orders,
+      restockingOrders,
+      restockingLoading,
       getOrdersByStatus,
       getOrderStatusClass,
       formatDate,
@@ -176,6 +239,17 @@ export default {
 .orders-table {
   table-layout: fixed;
   width: 100%;
+}
+
+.restocking-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
 }
 
 /* Column widths */
